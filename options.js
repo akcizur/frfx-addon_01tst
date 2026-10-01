@@ -13,16 +13,33 @@ const showStatus = document.getElementById("show-status");
 const status = document.getElementById("status");
 const defaultsButton = document.getElementById("defaults");
 
-function isAllowedUrl(value) {
+function normalizeAllowedUrl(value) {
+  if (typeof value !== "string" || value.trim() === "") {
+    return null;
+  }
+
   try {
-    const url = new URL(value);
-    return (
-      url.protocol === "https:" ||
-      (url.protocol === "http:" &&
-        ["localhost", "127.0.0.1", "::1"].includes(url.hostname))
-    );
+    const url = new URL(value.trim());
+
+    // Never persist or load embedded HTTP credentials from extension settings.
+    if (url.username || url.password) {
+      return null;
+    }
+
+    if (url.protocol === "https:") {
+      return url.href;
+    }
+
+    if (
+      url.protocol === "http:" &&
+      ["localhost", "127.0.0.1", "::1"].includes(url.hostname)
+    ) {
+      return url.href;
+    }
+
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -58,10 +75,17 @@ form.addEventListener("submit", async (event) => {
   try {
     const next = readFormValues();
 
-    if (!isAllowedUrl(next.targetUrl)) {
-      setStatus("Použijte HTTPS URL; HTTP je povoleno pouze pro localhost.", true);
+    const normalizedUrl = normalizeAllowedUrl(next.targetUrl);
+
+    if (!normalizedUrl) {
+      setStatus(
+        "Použijte HTTPS URL bez uživatelského jména/hesla; HTTP je povoleno pouze pro localhost.",
+        true
+      );
       return;
     }
+
+    next.targetUrl = normalizedUrl;
 
     await browser.storage.sync.set(next);
     await browser.runtime.sendMessage({ type: "apply-settings" });
