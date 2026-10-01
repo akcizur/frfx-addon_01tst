@@ -67,9 +67,9 @@ Výchozí:
 - Windows/Linux: Ctrl+Shift+Y
 - macOS: Command+Shift+Y
 
-Zkratka volá vlastní příkaz toggle-sidebar a podle stavu sidebar otevře nebo zavře.
+Zkratka volá vlastní příkaz toggle-sidebar a podle stavu sidebar otevře nebo zavře. Handler volá sidebarAction.toggle() přímo v rámci klávesové akce, aby zůstala zachována user-gesture oprávnění Firefoxu.
 
-Ve Firefoxu ji lze změnit přes správu klávesových zkratek doplňků.
+Ve Firefoxu lze zkratku změnit přes správu klávesových zkratek doplňků.
 
 ## Instalace pro vývoj
 
@@ -93,7 +93,6 @@ Nastavitelné položky:
 - cílová URL
 - režim sidebarAction.setPanel / iframe
 - zapnutí a vypnutí doplňku
-- otevření sidebaru po instalaci
 - zobrazení stavového řádku
 
 ## Testovací scénáře
