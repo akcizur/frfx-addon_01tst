@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Firefox Sidebar Connector",
+  "version": "1.0.0",
+  "description": "Bezpečný Firefox WebExtension pro zobrazení zadané webové stránky v postranním panelu.",
+  "icons": {
+    "32": "icons/action-32.png"
+  },
+  "action": {
+    "default_title": "Otevřít postranní panel",
+    "default_icon": {
+      "32": "icons/action-32.png"
+    }
+  },
+  "sidebar_action": {
+    "default_title": "Firefox Sidebar Connector",
+    "default_panel": "panel.html",
+    "default_icon": {
+      "32": "icons/panel-32.png"
+    },
+    "open_at_install": false
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "storage"
+  ],
+  "commands": {
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Otevřít nebo zavřít postranní panel"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https: http://localhost:* http://127.0.0.1:*"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "frfx-sidebar-connector@akcizur.github.io",
+      "strict_min_version": "115.0"
+    }
+  }
+}

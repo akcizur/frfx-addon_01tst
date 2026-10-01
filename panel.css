@@ -1,0 +1,150 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: Canvas;
+  color: CanvasText;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, CanvasText 8%, transparent), transparent 34%),
+    Canvas;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
+  background: color-mix(in srgb, Canvas 92%, CanvasText 8%);
+}
+
+.eyebrow {
+  margin: 0 0 2px;
+  font-size: 10px;
+  letter-spacing: .12em;
+  opacity: .55;
+}
+
+h1 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.icon-button,
+#disabled-options {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  background: transparent;
+  color: inherit;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+}
+
+.icon-button:hover,
+#disabled-options:hover {
+  background: color-mix(in srgb, CanvasText 8%, transparent);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 7px 12px;
+  font-size: 11px;
+  border-bottom: 1px solid color-mix(in srgb, CanvasText 10%, transparent);
+  opacity: .76;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .5;
+}
+
+.status[data-state="loading"] .status-dot {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.status[data-state="error"] {
+  color: #b00020;
+}
+
+.content {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+}
+
+#remote-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 82px);
+  border: 0;
+  background: white;
+}
+
+.disabled {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 82px);
+  padding: 24px;
+  text-align: center;
+}
+
+.disabled[hidden] {
+  display: none;
+}
+
+.disabled p {
+  max-width: 28rem;
+  margin: 8px 0 16px;
+  opacity: .7;
+  line-height: 1.5;
+}
+
+#disabled-options {
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 12px;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: .2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot {
+    animation: none;
+  }
+}

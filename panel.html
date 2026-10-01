@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'self'; frame-src https: http://localhost:* http://127.0.0.1:*">
+  <title>Firefox Sidebar Connector</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header class="panel-header">
+    <div>
+      <p class="eyebrow">SIDEBAR CONNECTOR</p>
+      <h1>Panel</h1>
+    </div>
+    <button id="open-options" class="icon-button" type="button" title="Nastavení" aria-label="Nastavení">⚙</button>
+  </header>
+
+  <section id="status" class="status" role="status" aria-live="polite">
+    <span id="status-dot" class="status-dot"></span>
+    <span id="status-text">Načítám nastavení…</span>
+  </section>
+
+  <main id="content" class="content">
+    <iframe
+      id="remote-frame"
+      title="Vzdálený obsah"
+      loading="eager"
+      referrerpolicy="no-referrer-when-downgrade"
+      sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-same-origin"
+    ></iframe>
+    <section id="disabled" class="disabled" hidden>
+      <strong>Doplněk je vypnutý.</strong>
+      <p>Zapněte jej v nastavení a zvolte cílovou URL.</p>
+      <button id="disabled-options" type="button">Otevřít nastavení</button>
+    </section>
+  </main>
+
+  <script src="panel.js"></script>
+</body>
+</html>
