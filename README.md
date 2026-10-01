@@ -5,7 +5,7 @@ Minimalistický Firefox WebExtension (Manifest V3), který zobrazí zadanou webo
 ## Výchozí konfigurace
 
 - Název: Firefox Sidebar Connector
-- Verze: 1.0.0
+- Verze: 1.0.1
 - Cílová URL: https://example.com/
 - Režim: sidebarAction.setPanel
 - Firefox: 115.0+
@@ -25,6 +25,7 @@ Tato implementace nepotřebuje číst ani měnit záložky. Tlačítko doplňku 
     ├─ panel.css
     ├─ panel.js
     ├─ options.html
+    ├─ options.css
     ├─ options.js
     ├─ icons/
     │  ├─ action-32.png
@@ -148,6 +149,7 @@ Pro distribuční ZIP vytvořte archiv obsahující:
     panel.css
     panel.js
     options.html
+    options.css
     options.js
     icons/
 
