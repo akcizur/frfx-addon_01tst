@@ -5,7 +5,7 @@ Minimalistický Firefox WebExtension (Manifest V3), který zobrazí zadanou webo
 ## Výchozí konfigurace
 
 - Název: Firefox Sidebar Connector
-- Verze: 1.0.1
+- Verze: 1.0.2
 - Cílová URL: https://example.com/
 - Režim: sidebarAction.setPanel
 - Firefox: 115.0+
