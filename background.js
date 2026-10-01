@@ -7,20 +7,33 @@ const DEFAULTS = Object.freeze({
 
 const LOCAL_PANEL = browser.runtime.getURL("panel.html");
 
-function isAllowedUrl(value) {
-  try {
-    const url = new URL(value);
+function normalizeAllowedUrl(value) {
+  if (typeof value !== "string" || value.trim() === "") {
+    return null;
+  }
 
-    if (url.protocol === "https:") {
-      return true;
+  try {
+    const url = new URL(value.trim());
+
+    // Never persist or load embedded HTTP credentials from extension settings.
+    if (url.username || url.password) {
+      return null;
     }
 
-    return (
+    if (url.protocol === "https:") {
+      return url.href;
+    }
+
+    if (
       url.protocol === "http:" &&
       ["localhost", "127.0.0.1", "::1"].includes(url.hostname)
-    );
+    ) {
+      return url.href;
+    }
+
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -36,9 +49,9 @@ async function getSettings() {
 async function applyPanel() {
   const settings = await getSettings();
 
-  const targetUrl = isAllowedUrl(settings.targetUrl)
-    ? new URL(settings.targetUrl).href
-    : DEFAULTS.targetUrl;
+  const targetUrl =
+    normalizeAllowedUrl(settings.targetUrl) ??
+    DEFAULTS.targetUrl;
 
   try {
     if (!settings.enabled) {
