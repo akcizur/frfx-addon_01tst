@@ -2,7 +2,6 @@ const DEFAULTS = Object.freeze({
   targetUrl: "https://example.com/",
   displayMode: "sidebarAction.setPanel",
   enabled: true,
-  openOnInstall: false,
   showStatus: true
 });
 
@@ -10,7 +9,6 @@ const form = document.getElementById("settings-form");
 const targetUrl = document.getElementById("target-url");
 const displayMode = document.getElementById("display-mode");
 const enabled = document.getElementById("enabled");
-const openOnInstall = document.getElementById("open-on-install");
 const showStatus = document.getElementById("show-status");
 const status = document.getElementById("status");
 const defaultsButton = document.getElementById("defaults");
@@ -32,7 +30,6 @@ function setFormValues(settings) {
   targetUrl.value = settings.targetUrl;
   displayMode.value = settings.displayMode;
   enabled.checked = settings.enabled;
-  openOnInstall.checked = settings.openOnInstall;
   showStatus.checked = settings.showStatus;
 }
 
@@ -41,7 +38,6 @@ function readFormValues() {
     targetUrl: targetUrl.value.trim(),
     displayMode: displayMode.value,
     enabled: enabled.checked,
-    openOnInstall: openOnInstall.checked,
     showStatus: showStatus.checked
   };
 }
