@@ -10,7 +10,10 @@ const LOCAL_PANEL = browser.runtime.getURL("panel.html");
 function isAllowedUrl(value) {
   try {
     const url = new URL(value);
-    if (url.protocol === "https:") return true;
+
+    if (url.protocol === "https:") {
+      return true;
+    }
 
     return (
       url.protocol === "http:" &&
@@ -23,62 +26,94 @@ function isAllowedUrl(value) {
 
 async function getSettings() {
   const stored = await browser.storage.sync.get(DEFAULTS);
-  return { ...DEFAULTS, ...stored };
+
+  return {
+    ...DEFAULTS,
+    ...stored
+  };
 }
 
-async function applyPanel(settings = await getSettings()) {
+async function applyPanel() {
+  const settings = await getSettings();
+
   const targetUrl = isAllowedUrl(settings.targetUrl)
-    ? settings.targetUrl
+    ? new URL(settings.targetUrl).href
     : DEFAULTS.targetUrl;
 
-  if (!settings.enabled) {
-    await browser.sidebarAction.setPanel({ panel: LOCAL_PANEL });
-    return;
-  }
+  try {
+    if (!settings.enabled) {
+      await browser.sidebarAction.setPanel({
+        panel: LOCAL_PANEL
+      });
+      return;
+    }
 
-  if (settings.displayMode === "sidebarAction.setPanel") {
-    await browser.sidebarAction.setPanel({ panel: targetUrl });
-    return;
-  }
+    if (settings.displayMode === "sidebarAction.setPanel") {
+      await browser.sidebarAction.setPanel({
+        panel: targetUrl
+      });
+      return;
+    }
 
-  await browser.sidebarAction.setPanel({ panel: LOCAL_PANEL });
+    await browser.sidebarAction.setPanel({
+      panel: LOCAL_PANEL
+    });
+  } catch (error) {
+    console.error("Nepodařilo se nastavit obsah sidebaru:", error);
+
+    try {
+      await browser.sidebarAction.setPanel({
+        panel: LOCAL_PANEL
+      });
+    } catch (fallbackError) {
+      console.error("Nepodařilo se obnovit lokální panel:", fallbackError);
+    }
+  }
 }
 
-browser.action.onClicked.addListener(() => {
+function toggleSidebar() {
+  // Tento API call musí proběhnout přímo v rámci uživatelské akce.
   browser.sidebarAction.toggle().catch((error) => {
     console.error("Nepodařilo se přepnout sidebar:", error);
   });
-});
+}
+
+browser.action.onClicked.addListener(toggleSidebar);
 
 browser.commands.onCommand.addListener((command) => {
   if (command === "toggle-sidebar") {
-    browser.sidebarAction.toggle().catch((error) => {
-      console.error("Nepodařilo se přepnout sidebar:", error);
-    });
+    toggleSidebar();
   }
 });
 
-browser.runtime.onInstalled.addListener(({ reason }) => {
-  const task = reason === "install"
-    ? browser.storage.sync.set(DEFAULTS).then(() => applyPanel())
-    : applyPanel();
+browser.runtime.onInstalled.addListener(async ({ reason }) => {
+  try {
+    if (reason === "install") {
+      await browser.storage.sync.set(DEFAULTS);
+    }
 
-  task.catch((error) => {
-    console.error("Nepodařilo se inicializovat sidebar:", error);
-  });
+    await applyPanel();
+  } catch (error) {
+    console.error("Nepodařilo se inicializovat rozšíření:", error);
+  }
 });
 
 browser.runtime.onStartup.addListener(() => {
   applyPanel().catch((error) => {
-    console.error("Nepodařilo se inicializovat sidebar:", error);
+    console.error("Nepodařilo se obnovit sidebar po startu Firefoxu:", error);
   });
 });
 
 browser.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName !== "sync") return;
+  if (areaName !== "sync") {
+    return;
+  }
 
   applyPanel().catch((error) => {
-    console.error("Nepodařilo se aktualizovat sidebar po změně nastavení:", error);
+    console.error(
+      "Nepodařilo se aktualizovat sidebar po změně nastavení:",
+      error
+    );
   });
 });
 
