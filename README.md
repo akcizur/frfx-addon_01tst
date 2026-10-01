@@ -55,7 +55,8 @@ Extension CSP povoluje rámce pouze z HTTPS a z localhost development adres.
 - žádný web_accessible_resources
 - žádné host_permissions
 - žádné čtení obsahu běžných webových stránek
-- cílová URL je validována
+- cílová URL je validována a normalizována
+- URL s uživatelským jménem nebo heslem je odmítnuta
 - HTTPS je výchozí; HTTP pouze pro localhost
 - data uživatele jsou ukládána přes browser.storage.sync
 
@@ -122,6 +123,7 @@ Zkuste například:
 
     javascript:alert(1)
     file:///C:/test.html
+    https://user:heslo@example.com/
 
 Uložení musí být odmítnuto.
 
