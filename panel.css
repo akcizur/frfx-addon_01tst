@@ -1,6 +1,11 @@
 :root {
   color-scheme: light dark;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   background: Canvas;
   color: CanvasText;
 }
@@ -12,6 +17,7 @@
 html,
 body {
   width: 100%;
+  min-width: 0;
   min-height: 100%;
   margin: 0;
 }
@@ -20,9 +26,12 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(circle at 100% 0%, color-mix(in srgb, CanvasText 8%, transparent), transparent 34%),
-    Canvas;
+  overflow: hidden;
+  background: Canvas;
+}
+
+button {
+  font: inherit;
 }
 
 .panel-header {
@@ -30,43 +39,57 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px;
+  flex: 0 0 auto;
+  padding: 12px 14px;
   border-bottom: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
-  background: color-mix(in srgb, Canvas 92%, CanvasText 8%);
+  background: color-mix(in srgb, Canvas 94%, CanvasText 6%);
+}
+
+.panel-heading {
+  min-width: 0;
 }
 
 .eyebrow {
   margin: 0 0 2px;
-  font-size: 10px;
-  letter-spacing: .12em;
-  opacity: .55;
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  opacity: 0.55;
 }
 
 h1 {
   margin: 0;
   font-size: 16px;
-  line-height: 1.2;
+  line-height: 1.25;
+  font-weight: 650;
 }
 
 .icon-button,
-#disabled-options {
+.message-panel button {
   appearance: none;
   border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
   background: transparent;
   color: inherit;
-  border-radius: 10px;
   cursor: pointer;
 }
 
 .icon-button {
   width: 34px;
   height: 34px;
+  flex: 0 0 34px;
+  border-radius: 9px;
   font-size: 16px;
 }
 
 .icon-button:hover,
-#disabled-options:hover {
+.message-panel button:hover {
   background: color-mix(in srgb, CanvasText 8%, transparent);
+}
+
+.icon-button:focus-visible,
+.message-panel button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .status {
@@ -75,71 +98,103 @@ h1 {
   gap: 8px;
   min-height: 30px;
   padding: 7px 12px;
-  font-size: 11px;
+  flex: 0 0 auto;
   border-bottom: 1px solid color-mix(in srgb, CanvasText 10%, transparent);
-  opacity: .76;
+  font-size: 11px;
+  opacity: 0.76;
+}
+
+.status[hidden] {
+  display: none;
 }
 
 .status-dot {
   width: 7px;
   height: 7px;
-  flex: 0 0 auto;
+  flex: 0 0 7px;
   border-radius: 50%;
   background: currentColor;
-  opacity: .5;
+  opacity: 0.55;
 }
 
 .status[data-state="loading"] .status-dot {
   animation: pulse 1s ease-in-out infinite;
 }
 
+.status[data-state="ready"] {
+  opacity: 0.8;
+}
+
 .status[data-state="error"] {
   color: #b00020;
+  opacity: 1;
 }
 
 .content {
   position: relative;
   min-height: 0;
-  flex: 1;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 #remote-frame {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 82px);
+  min-height: 0;
   border: 0;
-  background: white;
+  background: #fff;
 }
 
-.disabled {
+.message-panel {
+  width: 100%;
+  height: 100%;
   display: grid;
   place-items: center;
-  min-height: calc(100vh - 82px);
   padding: 24px;
   text-align: center;
 }
 
-.disabled[hidden] {
+.message-panel[hidden] {
   display: none;
 }
 
-.disabled p {
-  max-width: 28rem;
-  margin: 8px 0 16px;
-  opacity: .7;
-  line-height: 1.5;
+.message-panel > div {
+  width: min(100%, 30rem);
 }
 
-#disabled-options {
-  padding: 9px 12px;
-  font: inherit;
+.message-panel strong {
+  display: block;
+  font-size: 14px;
+}
+
+.message-panel p {
+  margin: 8px 0 16px;
+  line-height: 1.5;
   font-size: 12px;
+  opacity: 0.72;
+}
+
+.message-panel button {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+code {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+  font-size: 0.9em;
 }
 
 @keyframes pulse {
   50% {
-    opacity: .2;
+    opacity: 0.2;
   }
 }
 
