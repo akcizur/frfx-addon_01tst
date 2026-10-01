@@ -2,7 +2,6 @@ const DEFAULTS = Object.freeze({
   targetUrl: "https://example.com/",
   displayMode: "sidebarAction.setPanel",
   enabled: true,
-  openOnInstall: false,
   showStatus: true
 });
 
@@ -45,44 +44,28 @@ async function applyPanel(settings = await getSettings()) {
   await browser.sidebarAction.setPanel({ panel: LOCAL_PANEL });
 }
 
-async function toggleSidebar() {
-  const settings = await getSettings();
-  await applyPanel(settings);
-
-  const open = await browser.sidebarAction.isOpen();
-  if (open) {
-    await browser.sidebarAction.close();
-  } else {
-    await browser.sidebarAction.open();
-  }
-}
-
 browser.action.onClicked.addListener(() => {
-  toggleSidebar().catch((error) => {
+  browser.sidebarAction.toggle().catch((error) => {
     console.error("Nepodařilo se přepnout sidebar:", error);
   });
 });
 
 browser.commands.onCommand.addListener((command) => {
   if (command === "toggle-sidebar") {
-    toggleSidebar().catch((error) => {
+    browser.sidebarAction.toggle().catch((error) => {
       console.error("Nepodařilo se přepnout sidebar:", error);
     });
   }
 });
 
-browser.runtime.onInstalled.addListener(async ({ reason }) => {
-  if (reason !== "install") {
-    await applyPanel();
-    return;
-  }
+browser.runtime.onInstalled.addListener(({ reason }) => {
+  const task = reason === "install"
+    ? browser.storage.sync.set(DEFAULTS).then(() => applyPanel())
+    : applyPanel();
 
-  await browser.storage.sync.set(DEFAULTS);
-  await applyPanel();
-
-  if (DEFAULTS.openOnInstall) {
-    await browser.sidebarAction.open();
-  }
+  task.catch((error) => {
+    console.error("Nepodařilo se inicializovat sidebar:", error);
+  });
 });
 
 browser.runtime.onStartup.addListener(() => {
