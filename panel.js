@@ -18,20 +18,33 @@ const errorOptionsButton = document.getElementById("error-options");
 
 let loadTimeout = null;
 
-function isAllowedUrl(value) {
-  try {
-    const url = new URL(value);
+function normalizeAllowedUrl(value) {
+  if (typeof value !== "string" || value.trim() === "") {
+    return null;
+  }
 
-    if (url.protocol === "https:") {
-      return true;
+  try {
+    const url = new URL(value.trim());
+
+    // Never persist or load embedded HTTP credentials from extension settings.
+    if (url.username || url.password) {
+      return null;
     }
 
-    return (
+    if (url.protocol === "https:") {
+      return url.href;
+    }
+
+    if (
       url.protocol === "http:" &&
       ["localhost", "127.0.0.1", "::1"].includes(url.hostname)
-    );
+    ) {
+      return url.href;
+    }
+
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -127,14 +140,16 @@ async function init() {
       return;
     }
 
-    if (!isAllowedUrl(settings.targetUrl)) {
+    const targetUrl = normalizeAllowedUrl(settings.targetUrl);
+
+    if (!targetUrl) {
       showError(
         "URL musí používat HTTPS. Pro lokální vývoj je povolen pouze localhost, 127.0.0.1 nebo ::1."
       );
       return;
     }
 
-    showFrame(new URL(settings.targetUrl).href);
+    showFrame(targetUrl);
   } catch (error) {
     console.error("Nepodařilo se inicializovat panel:", error);
     showError("Nastavení panelu se nepodařilo načíst.");
