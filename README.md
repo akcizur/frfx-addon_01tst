@@ -96,6 +96,7 @@ Nastavitelné položky:
 - režim sidebarAction.setPanel / iframe
 - zapnutí a vypnutí doplňku
 - zobrazení stavového řádku
+- ruční obnovení obsahu v iframe režimu tlačítkem ↻ nebo Ctrl+R / Command+R
 
 ## Testovací scénáře
 
@@ -117,7 +118,11 @@ Nastavte:
 
 Lokální panel.html se zobrazí a uvnitř načte vzdálenou stránku.
 
-### C. Neplatná URL
+### C. Obnovení iframe
+
+V režimu `iframe` se v záhlaví zobrazí tlačítko `↻`. Kliknutí znovu načte aktuální cílovou URL. Stejnou akci lze vyvolat klávesovou zkratkou Ctrl+R na Windows/Linux nebo Command+R na macOS. Po načtení se zobrazí přibližná doba načtení.
+
+### D. Neplatná URL
 
 Zkuste například:
 
@@ -127,7 +132,7 @@ Zkuste například:
 
 Uložení musí být odmítnuto.
 
-### D. Lokální vývoj
+### E. Lokální vývoj
 
 Je povoleno například:
 
