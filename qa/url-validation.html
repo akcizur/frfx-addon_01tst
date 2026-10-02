@@ -6,6 +6,7 @@
 "use strict";
 const tests=[];
 function test(name,fn){try{fn();tests.push(["PASS",name]);}catch(error){tests.push(["FAIL",name,error.message]);}}
+function assert(condition,message){if(!condition)throw Error(message);}
 function normalizeAllowedUrl(value){
   if(typeof value!=="string"||value.trim()==="")return null;
   try{
@@ -23,6 +24,11 @@ test("127.0.0.1 HTTP is allowed",()=>{if(!normalizeAllowedUrl("http://127.0.0.1:
 test("credentials are rejected",()=>{if(normalizeAllowedUrl("https://user:pass@example.com/"))throw Error("credentials accepted");});
 test("javascript URL is rejected",()=>{if(normalizeAllowedUrl("javascript:alert(1)"))throw Error("javascript accepted");});
 test("file URL is rejected",()=>{if(normalizeAllowedUrl("file:///tmp/test.html"))throw Error("file accepted");});
+test("empty URL is rejected",()=>{assert(!normalizeAllowedUrl(""),"empty accepted");});
+test("whitespace is rejected",()=>{assert(!normalizeAllowedUrl("   "),"whitespace accepted");});
+test("mixed-case HTTPS is normalized",()=>{assert(normalizeAllowedUrl("HTTPS://example.com/path")==="https://example.com/path","HTTPS not normalized");});
+test("localhost hostname is accepted case-insensitively",()=>{assert(normalizeAllowedUrl("http://LOCALHOST:3000/"),"localhost rejected");});
+test("ftp URL is rejected",()=>{assert(!normalizeAllowedUrl("ftp://example.com/"),"ftp accepted");});
 document.body.innerHTML="<pre>"+tests.map(x=>x.join(" | ")).join("\n")+"</pre>";
 if(tests.some(x=>x[0]==="FAIL"))throw Error("QA failed");
 </script>
