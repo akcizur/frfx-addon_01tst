@@ -34,8 +34,26 @@ test("storage permission only",()=>assert(JSON.stringify(manifest.permissions)==
 test("toggle command exists",()=>assert(!!manifest.commands?.["toggle-sidebar"],"command missing"));
 test("CSP blocks object and inline scripts",()=>assert(manifest.content_security_policy?.extension_pages.includes("script-src 'self'")&&manifest.content_security_policy.extension_pages.includes("object-src 'none'"),"CSP incomplete"));
 test("required file manifest is complete",()=>assert(requiredFiles.every(Boolean),"required file list incomplete"));
-document.body.innerHTML="<pre>"+tests.map(x=>x.join(" | ")).join("\n")+"</pre>";
-if(tests.some(x=>x[0]==="FAIL"))throw Error("QA failed");
+async function verifyFiles(){
+  for(const path of requiredFiles){
+    try{
+      const response=await fetch(new URL("../"+path,location.href));
+      test("file exists: "+path,()=>assert(response.ok,"HTTP "+response.status));
+    }catch(error){
+      test("file exists: "+path,()=>{throw error;});
+    }
+  }
+  document.body.innerHTML="<pre>"+tests.map(x=>x.join(" | ")).join("\n")+"</pre>";
+  const failed=tests.filter(x=>x[0]==="FAIL");
+  if(failed.length){
+    document.body.dataset.result="fail";
+    throw Error("QA failed: "+failed.length);
+  }
+  document.body.dataset.result="pass";
+}
+verifyFiles().catch(error=>{
+  document.body.innerHTML="<pre>"+tests.map(x=>x.join(" | ")).join("\n")+"\n\nQA ERROR | "+error.message+"</pre>";
+});
 </script>
 </body>
 </html>
