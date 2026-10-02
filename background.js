@@ -46,8 +46,15 @@ async function getSettings() {
   };
 }
 
+let applyRevision = 0;
+
 async function applyPanel() {
+  const revision = ++applyRevision;
   const settings = await getSettings();
+
+  if (revision !== applyRevision) {
+    return { applied: false, reason: "superseded" };
+  }
 
   const targetUrl =
     normalizeAllowedUrl(settings.targetUrl) ??
@@ -58,19 +65,20 @@ async function applyPanel() {
       await browser.sidebarAction.setPanel({
         panel: LOCAL_PANEL
       });
-      return;
+      return { applied: true, mode: "disabled" };
     }
 
     if (settings.displayMode === "sidebarAction.setPanel") {
       await browser.sidebarAction.setPanel({
         panel: targetUrl
       });
-      return;
+      return { applied: true, mode: "direct", targetUrl };
     }
 
     await browser.sidebarAction.setPanel({
       panel: LOCAL_PANEL
     });
+    return { applied: true, mode: "iframe", targetUrl };
   } catch (error) {
     console.error("Nepodařilo se nastavit obsah sidebaru:", error);
 
@@ -81,6 +89,8 @@ async function applyPanel() {
     } catch (fallbackError) {
       console.error("Nepodařilo se obnovit lokální panel:", fallbackError);
     }
+
+    return { applied: false, mode: "fallback", error: error.message };
   }
 }
 
