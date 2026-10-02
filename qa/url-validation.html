@@ -9,26 +9,31 @@ function test(name,fn){try{fn();tests.push(["PASS",name]);}catch(error){tests.pu
 function assert(condition,message){if(!condition)throw Error(message);}
 function normalizeAllowedUrl(value){
   if(typeof value!=="string"||value.trim()==="")return null;
-  try{
-    const url=new URL(value.trim());
-    if(url.username||url.password)return null;
-    if(url.protocol==="https:")return url.href;
-    if(url.protocol==="http:"&&["localhost","127.0.0.1","::1"].includes(url.hostname))return url.href;
-    return null;
-  }catch{return null;}
+  try{const url=new URL(value.trim());if(url.username||url.password)return null;if(url.protocol==="https:")return url.href;if(url.protocol==="http:"&&["localhost","127.0.0.1","::1"].includes(url.hostname))return url.href;return null;}catch{return null;}
 }
-test("HTTPS is allowed",()=>{if(!normalizeAllowedUrl("https://example.com/"))throw Error("HTTPS rejected");});
-test("HTTP public is rejected",()=>{if(normalizeAllowedUrl("http://example.com/"))throw Error("public HTTP accepted");});
-test("localhost HTTP is allowed",()=>{if(!normalizeAllowedUrl("http://localhost:3000/"))throw Error("localhost rejected");});
-test("127.0.0.1 HTTP is allowed",()=>{if(!normalizeAllowedUrl("http://127.0.0.1:5173/"))throw Error("loopback rejected");});
-test("credentials are rejected",()=>{if(normalizeAllowedUrl("https://user:pass@example.com/"))throw Error("credentials accepted");});
-test("javascript URL is rejected",()=>{if(normalizeAllowedUrl("javascript:alert(1)"))throw Error("javascript accepted");});
-test("file URL is rejected",()=>{if(normalizeAllowedUrl("file:///tmp/test.html"))throw Error("file accepted");});
-test("empty URL is rejected",()=>{assert(!normalizeAllowedUrl(""),"empty accepted");});
-test("whitespace is rejected",()=>{assert(!normalizeAllowedUrl("   "),"whitespace accepted");});
-test("mixed-case HTTPS is normalized",()=>{assert(normalizeAllowedUrl("HTTPS://example.com/path")==="https://example.com/path","HTTPS not normalized");});
-test("localhost hostname is accepted case-insensitively",()=>{assert(normalizeAllowedUrl("http://LOCALHOST:3000/"),"localhost rejected");});
-test("ftp URL is rejected",()=>{assert(!normalizeAllowedUrl("ftp://example.com/"),"ftp accepted");});
+const manifest={"manifest_version":3,"name":"Firefox Sidebar Connector","version":"1.2.0","description":"Bezpečný Firefox WebExtension pro zobrazení zadané webové stránky nebo nástroje v postranním panelu.","icons":{"32":"icons/action-32.png"},"action":{"default_title":"Otevřít / zavřít postranní panel","default_icon":{"32":"icons/action-32.png"}},"sidebar_action":{"default_title":"Firefox Sidebar Connector","default_panel":"panel.html","default_icon":{"32":"icons/panel-32.png"},"open_at_install":false},"background":{"scripts":["background.js"]},"options_ui":{"page":"options.html","open_in_tab":true},"permissions":["storage"],"commands":{"toggle-sidebar":{"suggested_key":{"default":"Ctrl+Shift+Y","mac":"Command+Shift+Y"},"description":"Otevřít nebo zavřít postranní panel"}},"content_security_policy":{"extension_pages":"script-src 'self'; object-src 'none'; base-uri 'none'; frame-src https: http://localhost:* http://127.0.0.1:* http://[::1]:*"},"browser_specific_settings":{"gecko":{"id":"frfx-sidebar-connector@akcizur.github.io","strict_min_version":"115.0"}}};
+const requiredFiles=["manifest.json","background.js","panel.html","panel.css","panel.js","options.html","options.css","options.js","icons/action-32.png","icons/panel-32.png"];
+test("HTTPS is allowed",()=>assert(normalizeAllowedUrl("https://example.com/"),"HTTPS rejected"));
+test("HTTP public is rejected",()=>assert(!normalizeAllowedUrl("http://example.com/"),"public HTTP accepted"));
+test("localhost HTTP is allowed",()=>assert(normalizeAllowedUrl("http://localhost:3000/"),"localhost rejected"));
+test("127.0.0.1 HTTP is allowed",()=>assert(normalizeAllowedUrl("http://127.0.0.1:5173/"),"loopback rejected"));
+test("credentials are rejected",()=>assert(!normalizeAllowedUrl("https://user:pass@example.com/"),"credentials accepted"));
+test("javascript URL is rejected",()=>assert(!normalizeAllowedUrl("javascript:alert(1)"),"javascript accepted"));
+test("file URL is rejected",()=>assert(!normalizeAllowedUrl("file:///tmp/test.html"),"file accepted"));
+test("empty URL is rejected",()=>assert(!normalizeAllowedUrl(""),"empty accepted"));
+test("whitespace is rejected",()=>assert(!normalizeAllowedUrl("   "),"whitespace accepted"));
+test("mixed-case HTTPS is normalized",()=>assert(normalizeAllowedUrl("HTTPS://example.com/path")==="https://example.com/path","HTTPS not normalized"));
+test("localhost hostname is accepted case-insensitively",()=>assert(normalizeAllowedUrl("http://LOCALHOST:3000/"),"localhost rejected"));
+test("ftp URL is rejected",()=>assert(!normalizeAllowedUrl("ftp://example.com/"),"ftp accepted"));
+test("manifest is MV3",()=>assert(manifest.manifest_version===3,"manifest_version != 3"));
+test("manifest version is 1.2.0",()=>assert(manifest.version==="1.2.0","version mismatch"));
+test("background is registered",()=>assert(manifest.background?.scripts?.includes("background.js"),"background.js missing"));
+test("sidebar panel is registered",()=>assert(manifest.sidebar_action?.default_panel==="panel.html","default panel mismatch"));
+test("options page is registered",()=>assert(manifest.options_ui?.page==="options.html","options page mismatch"));
+test("storage permission only",()=>assert(JSON.stringify(manifest.permissions)==='["storage"]',"unexpected permissions"));
+test("toggle command exists",()=>assert(!!manifest.commands?.["toggle-sidebar"],"command missing"));
+test("CSP blocks object and inline scripts",()=>assert(manifest.content_security_policy?.extension_pages.includes("script-src 'self'")&&manifest.content_security_policy.extension_pages.includes("object-src 'none'"),"CSP incomplete"));
+test("required file manifest is complete",()=>assert(requiredFiles.every(Boolean),"required file list incomplete"));
 document.body.innerHTML="<pre>"+tests.map(x=>x.join(" | ")).join("\n")+"</pre>";
 if(tests.some(x=>x[0]==="FAIL"))throw Error("QA failed");
 </script>
