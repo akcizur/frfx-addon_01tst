@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="cs">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Firefox Sidebar Connector – QA</title></head>
+<body>
+<script>
+"use strict";
+const tests=[];
+function test(name,fn){try{fn();tests.push(["PASS",name]);}catch(error){tests.push(["FAIL",name,error.message]);}}
+function normalizeAllowedUrl(value){
+  if(typeof value!=="string"||value.trim()==="")return null;
+  try{
+    const url=new URL(value.trim());
+    if(url.username||url.password)return null;
+    if(url.protocol==="https:")return url.href;
+    if(url.protocol==="http:"&&["localhost","127.0.0.1","::1"].includes(url.hostname))return url.href;
+    return null;
+  }catch{return null;}
+}
+test("HTTPS is allowed",()=>{if(!normalizeAllowedUrl("https://example.com/"))throw Error("HTTPS rejected");});
+test("HTTP public is rejected",()=>{if(normalizeAllowedUrl("http://example.com/"))throw Error("public HTTP accepted");});
+test("localhost HTTP is allowed",()=>{if(!normalizeAllowedUrl("http://localhost:3000/"))throw Error("localhost rejected");});
+test("127.0.0.1 HTTP is allowed",()=>{if(!normalizeAllowedUrl("http://127.0.0.1:5173/"))throw Error("loopback rejected");});
+test("credentials are rejected",()=>{if(normalizeAllowedUrl("https://user:pass@example.com/"))throw Error("credentials accepted");});
+test("javascript URL is rejected",()=>{if(normalizeAllowedUrl("javascript:alert(1)"))throw Error("javascript accepted");});
+test("file URL is rejected",()=>{if(normalizeAllowedUrl("file:///tmp/test.html"))throw Error("file accepted");});
+document.body.innerHTML="<pre>"+tests.map(x=>x.join(" | ")).join("\n")+"</pre>";
+if(tests.some(x=>x[0]==="FAIL"))throw Error("QA failed");
+</script>
+</body>
+</html>
