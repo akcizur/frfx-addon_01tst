@@ -73,6 +73,13 @@ h1 {
   cursor: pointer;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
 .icon-button {
   width: 34px;
   height: 34px;
@@ -123,6 +130,17 @@ h1 {
 
 .status[data-state="ready"] {
   opacity: 0.8;
+}
+
+.status-time {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.55;
+}
+
+.icon-button[aria-busy="true"] {
+  opacity: 0.5;
+  cursor: wait;
 }
 
 .status[data-state="error"] {
