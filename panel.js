@@ -21,6 +21,7 @@ const errorOptionsButton = document.getElementById("error-options");
 let loadTimeout = null;
 let loadStartedAt = 0;
 let currentTargetUrl = null;
+let settingsRevision = 0;
 
 function normalizeAllowedUrl(value) {
   if (typeof value !== "string" || value.trim() === "") return null;
@@ -60,6 +61,7 @@ function openOptions() {
 }
 
 function showDisabled() {
+  currentTargetUrl = null;
   hidePanels();
   reloadButton.hidden = true;
   disabledPanel.hidden = false;
@@ -67,6 +69,7 @@ function showDisabled() {
 }
 
 function showDirectMode() {
+  currentTargetUrl = null;
   hidePanels();
   reloadButton.hidden = true;
   directModePanel.hidden = false;
@@ -123,9 +126,49 @@ function handleFrameError() {
   showError("Cílová stránka odmítla vložení nebo není dostupná.");
 }
 
-async function init() {
+async function applySettings({ reload = false } = {}) {
+  const revision = ++settingsRevision;
+
   try {
     const settings = await browser.storage.sync.get(DEFAULTS);
+    if (revision !== settingsRevision) return;
+
+    status.hidden = settings.showStatus === false;
+
+    if (!settings.enabled) {
+      showDisabled();
+      return;
+    }
+
+    if (settings.displayMode !== "iframe") {
+      showDirectMode();
+      return;
+    }
+
+    const targetUrl = normalizeAllowedUrl(settings.targetUrl);
+    if (!targetUrl) {
+      currentTargetUrl = null;
+      showError("URL musí používat HTTPS. Pro lokální vývoj je povolen pouze localhost, 127.0.0.1 nebo ::1.");
+      return;
+    }
+
+    if (reload || targetUrl !== currentTargetUrl) {
+      startFrameLoad(targetUrl, reload);
+      return;
+    }
+
+    reloadButton.hidden = false;
+  } catch (error) {
+    console.error("Nepodařilo se aktualizovat nastavení panelu:", error);
+    showError("Nastavení panelu se nepodařilo načíst.");
+  }
+}
+
+async function init() {
+  await applySettings();
+}
+
+
     status.hidden = settings.showStatus === false;
 
     if (!settings.enabled) {
@@ -157,6 +200,13 @@ errorOptionsButton.addEventListener("click", openOptions);
 reloadButton.addEventListener("click", reloadFrame);
 frame.addEventListener("load", handleFrameLoad);
 frame.addEventListener("error", handleFrameError);
+
+browser.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "sync") return;
+  applySettings({ reload: true }).catch((error) => {
+    console.error("Nepodařilo se synchronizovat změny nastavení:", error);
+  });
+});
 
 document.addEventListener("keydown", (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "r" && currentTargetUrl) {
