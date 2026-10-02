@@ -168,32 +168,6 @@ async function init() {
   await applySettings();
 }
 
-
-    status.hidden = settings.showStatus === false;
-
-    if (!settings.enabled) {
-      showDisabled();
-      return;
-    }
-
-    if (settings.displayMode !== "iframe") {
-      showDirectMode();
-      return;
-    }
-
-    const targetUrl = normalizeAllowedUrl(settings.targetUrl);
-    if (!targetUrl) {
-      showError("URL musí používat HTTPS. Pro lokální vývoj je povolen pouze localhost, 127.0.0.1 nebo ::1.");
-      return;
-    }
-
-    startFrameLoad(targetUrl);
-  } catch (error) {
-    console.error("Nepodařilo se inicializovat panel:", error);
-    showError("Nastavení panelu se nepodařilo načíst.");
-  }
-}
-
 openOptionsButton.addEventListener("click", openOptions);
 disabledOptionsButton.addEventListener("click", openOptions);
 errorOptionsButton.addEventListener("click", openOptions);
