@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Firefox Sidebar Connector",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Bezpečný Firefox WebExtension pro zobrazení zadané webové stránky nebo nástroje v postranním panelu.",
   "icons": {
     "32": "icons/action-32.png"
