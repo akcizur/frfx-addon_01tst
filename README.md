@@ -5,7 +5,7 @@ Minimalistický Firefox WebExtension (Manifest V3), který zobrazí zadanou webo
 ## Výchozí konfigurace
 
 - Název: Firefox Sidebar Connector
-- Verze: 1.0.2
+- Verze: 1.2.0
 - Cílová URL: https://example.com/
 - Režim: sidebarAction.setPanel
 - Firefox: 115.0+
@@ -122,7 +122,11 @@ Lokální panel.html se zobrazí a uvnitř načte vzdálenou stránku.
 
 V režimu `iframe` se v záhlaví zobrazí tlačítko `↻`. Kliknutí znovu načte aktuální cílovou URL. Stejnou akci lze vyvolat klávesovou zkratkou Ctrl+R na Windows/Linux nebo Command+R na macOS. Po načtení se zobrazí přibližná doba načtení.
 
-### D. Neplatná URL
+### D. Živá synchronizace nastavení
+
+Změna URL, režimu nebo zapnutí/vypnutí v nastavení se synchronizuje do otevřeného sidebaru přes `browser.storage.sync`. Background současně aktualizuje skutečný Firefox sidebar panel.
+
+### E. Neplatná URL
 
 Zkuste například:
 
@@ -132,7 +136,7 @@ Zkuste například:
 
 Uložení musí být odmítnuto.
 
-### E. Lokální vývoj
+### F. Lokální vývoj
 
 Je povoleno například:
 
