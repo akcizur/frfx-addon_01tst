@@ -3,78 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta
-    http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src https: http://localhost:* http://127.0.0.1:* http://[::1]:*"
-  >
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src https: http://localhost:* http://127.0.0.1:* http://[::1]:*">
   <title>Firefox Sidebar Connector</title>
   <link rel="stylesheet" href="panel.css">
 </head>
 <body>
   <header class="panel-header">
-    <div class="panel-heading">
-      <p class="eyebrow">SIDEBAR CONNECTOR</p>
-      <h1 id="panel-title">Panel</h1>
+    <div class="panel-heading"><p class="eyebrow">SIDEBAR CONNECTOR</p><h1 id="panel-title">Panel</h1></div>
+    <div class="header-actions">
+      <button id="reload" class="icon-button" type="button" title="Obnovit obsah" aria-label="Obnovit obsah" hidden>↻</button>
+      <button id="open-options" class="icon-button" type="button" title="Nastavení" aria-label="Otevřít nastavení">⚙</button>
     </div>
-
-    <button
-      id="open-options"
-      class="icon-button"
-      type="button"
-      title="Nastavení"
-      aria-label="Otevřít nastavení"
-    >
-      ⚙
-    </button>
   </header>
-
   <section id="status" class="status" role="status" aria-live="polite">
-    <span id="status-dot" class="status-dot" aria-hidden="true"></span>
-    <span id="status-text">Načítám nastavení…</span>
+    <span id="status-dot" class="status-dot" aria-hidden="true"></span><span id="status-text">Načítám nastavení…</span><span id="status-time" class="status-time" aria-hidden="true"></span>
   </section>
-
   <main id="content" class="content">
-    <iframe
-      id="remote-frame"
-      title="Cílový obsah"
-      loading="eager"
-      referrerpolicy="no-referrer"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-scripts allow-same-origin"
-    ></iframe>
-
-    <section id="disabled" class="message-panel" hidden>
-      <div>
-        <strong>Doplněk je vypnutý.</strong>
-        <p>Zapněte jej v nastavení a zvolte cílovou URL.</p>
-        <button id="disabled-options" type="button">
-          Otevřít nastavení
-        </button>
-      </div>
-    </section>
-
-    <section id="direct-mode" class="message-panel" hidden>
-      <div>
-        <strong>Používá se přímý režim.</strong>
-        <p>
-          Obsah sidebaru je nastaven přes
-          <code>sidebarAction.setPanel()</code>.
-        </p>
-      </div>
-    </section>
-
-    <section id="error" class="message-panel" hidden>
-      <div>
-        <strong>Obsah nelze načíst.</strong>
-        <p id="error-text">
-          Zkontrolujte URL nebo bezpečnostní omezení cílové stránky.
-        </p>
-        <button id="error-options" type="button">
-          Otevřít nastavení
-        </button>
-      </div>
-    </section>
+    <iframe id="remote-frame" title="Cílový obsah" loading="eager" referrerpolicy="no-referrer" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-scripts allow-same-origin"></iframe>
+    <section id="disabled" class="message-panel" hidden><div><strong>Doplněk je vypnutý.</strong><p>Zapněte jej v nastavení a zvolte cílovou URL.</p><button id="disabled-options" type="button">Otevřít nastavení</button></div></section>
+    <section id="direct-mode" class="message-panel" hidden><div><strong>Používá se přímý režim.</strong><p>Obsah sidebaru je nastaven přes <code>sidebarAction.setPanel()</code>.</p></div></section>
+    <section id="error" class="message-panel" hidden><div><strong>Obsah nelze načíst.</strong><p id="error-text">Zkontrolujte URL nebo bezpečnostní omezení cílové stránky.</p><button id="error-options" type="button">Otevřít nastavení</button></div></section>
   </main>
-
   <script src="panel.js"></script>
 </body>
 </html>
